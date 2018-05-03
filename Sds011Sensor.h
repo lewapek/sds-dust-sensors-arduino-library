@@ -37,20 +37,63 @@ public:
     return response;
   }
 
-  Status sleep() {
-    const Command *command = &Commands::sleep;
-    write(command);
-    return readIntoBytes(command->responseId);
+  Status queryReportingMode() {
+    return execute(&Commands::queryReportingMode);
   }
 
-  Status wakeup() {
-    const Command *command = &Commands::wakeup;
-    write(command);
-    return readIntoBytes(command->responseId);
+  Status setQueryReportingMode() {
+    return execute(&Commands::setQueryReportingMode);
+  }
+
+  Status setActiveReportingMode() {
+    return execute(&Commands::setActiveReportingMode);
+  }
+
+  Status queryPm() {
+    return execute(&Commands::queryPm);
+  }
+
+  Status setDeviceId(byte newDeviceIdByte1, byte newDeviceIdByte2) {
+    (Commands::setDeviceId).setDeviceId(newDeviceIdByte1, newDeviceIdByte2);
+    return execute(&Commands::setDeviceId);
   }
 
   Status queryWorkingState() {
-    const Command *command = &Commands::queryWorkingState;
+    return execute(&Commands::queryWorkingState);
+  }
+
+  Status sleep() {
+    return execute(&Commands::sleep);
+  }
+
+  Status wakeup() {
+    return execute(&Commands::wakeup);
+  }
+
+  Status queryWorkingPeriod() {
+    return execute(&Commands::queryWorkingPeriod);
+  }
+
+  Status setContinuousWorkingPeriod() {
+    (Commands::setWorkingPeriod).setContinuousWorkingPeriod();
+    return execute(&Commands::setWorkingPeriod);
+  }
+
+  // byte cmd[19] = {
+  //         0xaa, 0xb4, 0x08, 0x01, 0x03,
+  //         0x00, 0x00, 0x00, 0x00, 0x00,
+  //         0x00, 0x00, 0x00, 0x00, 0x00,
+  //         0xFF, 0xFF, 0x0a, 0xab};
+  Status setCustomWorkingPeriod(byte workingPeriod) {
+    (Commands::setWorkingPeriod).setCustomWorkingPeriod(workingPeriod);
+    return execute(&Commands::setWorkingPeriod);
+  }
+
+  Status queryFirmwareVersion() {
+    return execute(&Commands::queryFirmwareVersion);
+  }
+
+  Status execute(const Command *command) {
     write(command);
     return readIntoBytes(command->responseId);
   }

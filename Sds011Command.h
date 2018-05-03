@@ -1,19 +1,19 @@
 #include <Arduino.h>
 
 struct Command {
-  const static int length = 19;
-  const static int headIndex = 0;
-  const static int commandIdIndex = 1;
-  const static int dataStartIndex = 2, dataEndIndex = 14;
-  const static int devideIdByte1Index = 15;
-  const static int devideIdByte2Index = 16;
-  const static int checksumIndex = 17;
-  const static int tailIndex = 18;
+  static const int length = 19;
+  static const int headIndex = 0;
+  static const int commandIdIndex = 1;
+  static const int dataStartIndex = 2, dataEndIndex = 14;
+  static const int devideIdByte1Index = 15;
+  static const int devideIdByte2Index = 16;
+  static const int checksumIndex = 17;
+  static const int tailIndex = 18;
 
-  const static byte head = 0xAA;
-  const static byte tail = 0xAB;
+  static const byte head = 0xAA;
+  static const byte tail = 0xAB;
 
-  const static int responseLenght = 10;
+  static const int responseLenght = 10;
 
   byte *bytes = NULL;
   byte responseId;
@@ -60,15 +60,44 @@ struct Command {
   }
 };
 
+struct SetWorkingPeriodCommand: public Command {
+  static const int workingPeriodIndex = 4;
+
+  using Command::Command; // constructor inheritance
+
+  void setCustomWorkingPeriod(byte period) {
+    bytes[workingPeriodIndex] = period;
+    bytes[checksumIndex] = calculateChecksum();
+  }
+
+  void setContinuousWorkingPeriod() {
+    bytes[workingPeriodIndex] = 0x00;
+    bytes[checksumIndex] = calculateChecksum();
+  }
+};
+
+struct SetDeviceIdCommand: public Command {
+  static const int deviceIdIndex1 = 13;
+  static const int deviceIdIndex2 = 14;
+
+  using Command::Command; // constructor inheritance
+
+  void setDeviceId(byte byte1, byte byte2) {
+    bytes[deviceIdIndex1] = byte1;
+    bytes[deviceIdIndex2] = byte2;
+    bytes[checksumIndex] = calculateChecksum();
+  }
+};
+
 namespace Commands {
   // reporting mode
-  const static byte queryReportingModeData[1] = {0x02};
-  const static Command queryReportingMode(0xB4, queryReportingModeData, sizeof(queryReportingModeData), 0xC5);
+  static const byte queryReportingModeData[1] = {0x02};
+  static const Command queryReportingMode(0xB4, queryReportingModeData, sizeof(queryReportingModeData), 0xC5);
 
-  static const byte setActiveReportingModeData[3] = {0x02, 0x01, 0x01};
+  static const byte setActiveReportingModeData[2] = {0x02, 0x01};
   static const Command setActiveReportingMode(0xB4, setActiveReportingModeData, sizeof(setActiveReportingModeData), 0xC5);
 
-  static const byte setQueryReportingModeData[2] = {0x02, 0x01};
+  static const byte setQueryReportingModeData[3] = {0x02, 0x01, 0x01};
   static const Command setQueryReportingMode(0xB4, setQueryReportingModeData, sizeof(setQueryReportingModeData), 0xC5);
 
   // query data
@@ -77,7 +106,7 @@ namespace Commands {
 
   // set device id
   static const byte setDeviceIdData[1] = {0x05};
-  static const Command setDeviceId(0xB4, setDeviceIdData, sizeof(setDeviceIdData), 0xC5);
+  static SetDeviceIdCommand setDeviceId(0xB4, setDeviceIdData, sizeof(setDeviceIdData), 0xC5);
 
   // sleep and work
   static const byte queryWorkingStateData[1] = {0x06};
@@ -93,30 +122,10 @@ namespace Commands {
   static const byte queryWorkingPeriodData[1] = {0x08};
   static const Command queryWorkingPeriod(0xB4, queryWorkingPeriodData, sizeof(queryWorkingPeriodData), 0xC5);
 
-  static const byte setContinuousWorkingPeriodData[2] = {0x08, 0x01};
-  static const Command setContinuousWorkingPeriod(0xB4, setContinuousWorkingPeriodData, sizeof(setContinuousWorkingPeriodData), 0xC5);
-
-  static const byte setCustomWorkingPeriodData[2] = {0x08, 0x01};
-  static const Command setCoustomWorkingPeriod(0xB4, setCustomWorkingPeriodData, sizeof(setCustomWorkingPeriodData), 0xC5);
+  static const byte setWorkingPeriodData[2] = {0x08, 0x01};
+  static SetWorkingPeriodCommand setWorkingPeriod(0xB4, setWorkingPeriodData, sizeof(setWorkingPeriodData), 0xC5);
 
   // firmware version
   static const byte queryFirmwareVersionData[1] = {0x07};
   static const Command queryFirmwareVersion(0xB4, queryFirmwareVersionData, sizeof(queryFirmwareVersionData), 0xC5);
 };
-
-
-
-//
-// // sleep and work
-// static const byte sleepData[2] = {0x06, 0x01};
-// static const Command sleepCommand(0xB4, sleepData, sizeof(sleepData), 0xC5);
-//
-// static const byte workData[3] = {0x06, 0x01, 0x01};
-// static const Command workCommand(0xB4, workData, sizeof(workData), 0xC5);
-//
-// static const byte queryWorkingStateData[1] = {0x06};
-// static const Command workQueryCommand(0xB4, queryWorkingStateData, sizeof(queryWorkingStateData), 0xC5);
-//
-//
-// static const byte workPeriodData[2] = {0x08, 0x01};
-// static const Command workPeriodCommand(0xB4, workPeriodData, sizeof(workPeriodData), 0xC5);
