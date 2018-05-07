@@ -1,24 +1,12 @@
 #include "SdsDustSensor.h"
 
-const char *SdsDustSensor::statusToString(Status *status) {
-  switch (*status) {
-    case Status::Ok: return "Ok";
-    case Status::NotAvailable: return "Not available";
-    case Status::InvalidChecksum: return "Invalid checksum";
-    case Status::InvalidResponseId: return "Invalid response id";
-    case Status::InvalidHead: return "Invalid head";
-    case Status::InvalidTail: return "Invalid tail";
-    default: return "undefined status";
-  }
-}
-
-void SdsDustSensor::write(const Command *command) {
+void SdsDustSensor::write(const Command &command) {
   sdsSerial->flush();
   for (int i = 0; i < Command::length; ++i) {
-    sdsSerial->write(command->bytes[i]);
+    sdsSerial->write(command.bytes[i]);
     #ifdef __DEBUG_SDS_DUST_SENSOR__
     Serial.print("|");
-    Serial.print(command->bytes[i], HEX);
+    Serial.print(command.bytes[i], HEX);
     #endif
   }
   #ifdef __DEBUG_SDS_DUST_SENSOR__

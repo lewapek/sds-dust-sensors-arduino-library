@@ -14,7 +14,7 @@ struct Result {
   Status status;
   byte rawBytes[lenght];
 
-  Result(Status status, byte *bytes): status(status) {
+  Result(const Status &status, byte *bytes): status(status) {
     if (isOk()) {
       for (int i = 0; i < lenght; ++i) {
         rawBytes[i] = bytes[i];
@@ -31,9 +31,11 @@ struct Result {
   }
 
   byte *deviceId() {
-    // device id has 2 bytes
+    // warning: device id has 2 bytes, to access 2nd byte: deviceId()[1]
     return rawBytes + deviceIdStartIndex;
   }
+
+  String statusToString();
 };
 
 struct ReportingModeResult: public Result {
@@ -42,7 +44,7 @@ struct ReportingModeResult: public Result {
   static const int modeIndex = 4;
   Mode mode;
 
-  ReportingModeResult(Status status, byte *bytes): Result(status, bytes) {
+  ReportingModeResult(const Status &status, byte *bytes): Result(status, bytes) {
     switch (rawBytes[modeIndex]) {
       case 0: mode = Mode::Active; break;
       case 1: mode = Mode::Query; break;
@@ -67,7 +69,7 @@ struct PmResult: public Result {
   float pm25 = -1.0;
   float pm10 = -1.0;
 
-  PmResult(Status status, byte *bytes): Result(status, bytes) {
+  PmResult(const Status &status, byte *bytes): Result(status, bytes) {
     if (isOk()) {
       pm25 = (rawBytes[2] | (rawBytes[3] << 8)) / 10.0;
       pm10 = (rawBytes[4] | (rawBytes[5] << 8)) / 10.0;
@@ -85,7 +87,7 @@ struct WorkingStateResult: public Result {
   static const int stateIndex = 4;
   State state;
 
-  WorkingStateResult(Status status, byte *bytes): Result(status, bytes) {
+  WorkingStateResult(const Status &status, byte *bytes): Result(status, bytes) {
     switch (rawBytes[stateIndex]) {
       case 0: state = State::Sleeping; break;
       case 1: state = State::Working; break;
@@ -110,7 +112,7 @@ struct WorkingPeriodResult: public Result {
   static const int periodIndex = 4;
   byte period;
 
-  WorkingPeriodResult(Status status, byte *bytes): Result(status, bytes) {
+  WorkingPeriodResult(const Status &status, byte *bytes): Result(status, bytes) {
     period = rawBytes[periodIndex];
   }
 
@@ -131,7 +133,7 @@ struct FirmwareVersionResult: public Result {
   static const int periodIndex = 4;
   int year = -1, month = -1, day = -1;
 
-  FirmwareVersionResult(Status status, byte *bytes): Result(status, bytes) {
+  FirmwareVersionResult(const Status &status, byte *bytes): Result(status, bytes) {
     if (isOk()) {
       year = rawBytes[3];
       month = rawBytes[4];

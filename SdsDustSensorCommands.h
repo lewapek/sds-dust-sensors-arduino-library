@@ -70,7 +70,7 @@ struct Command {
 struct SetWorkingPeriodCommand: public Command {
   static const int workingPeriodIndex = 4;
 
-  using Command::Command; // constructor inheritance
+  using Command::Command;
 
   void setCustomWorkingPeriod(byte period) {
     bytes[workingPeriodIndex] = period;
@@ -87,7 +87,7 @@ struct SetDeviceIdCommand: public Command {
   static const int newDeviceIdIndex1 = 13;
   static const int newDeviceIdIndex2 = 14;
 
-  using Command::Command; // constructor inheritance
+  using Command::Command;
 
   void setNewDeviceId(byte byte1, byte byte2) {
     bytes[newDeviceIdIndex1] = byte1;
