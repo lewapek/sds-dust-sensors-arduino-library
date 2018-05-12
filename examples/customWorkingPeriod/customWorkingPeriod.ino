@@ -10,7 +10,7 @@ void setup() {
 
   Serial.println(sds.queryFirmwareVersion().toString()); // prints firmware version
   Serial.println(sds.setActiveReportingMode().toString()); // ensures sensor is in 'active' reporting mode
-  Serial.println(sds.setCustomWorkingPeriod(3).toString()); // sensor sends data every 5 minutes
+  Serial.println(sds.setCustomWorkingPeriod(3).toString()); // sensor sends data every 3 minutes
 }
 
 void loop() {
