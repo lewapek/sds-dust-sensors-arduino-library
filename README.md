@@ -1,6 +1,7 @@
 # Nova Fitness SDS dust sensors arduino library
 Supports Nova Fitness SDS011 however should also work for other Nova Fitness SDS sensors as well.
 This library attempts to provide easy-to-use abstraction over [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).
+Each response coming from sensor is validated whether it has correct head, command id, checksum and tail.
 
 ## Quickstart
 ```
@@ -37,11 +38,35 @@ void loop() {
   delay(500);
 }
 ```
-
 For more examples see [examples](examples/) folder.
 
+## Initilization
+Communication with sensor can be handled by SoftwareSerial or HardwareSerial. You can pass SoftwareSerial or HardwareSerial directly to the constructor or provide rx & tx pins (library will use SoftwareSerial then).
+
+### Internal SoftwareSerial
+```
+int rxPin = D1;
+int txPin = D2;
+SdsDustSensor sds(rxPin, txPin);
+sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
+```
+
+### Explicit SoftwareSerial
+```
+int rxPin = D1;
+int txPin = D2;
+SoftwareSerial softwareSerial(rxPin, txPin);
+SdsDustSensor sds(softwareSerial);
+sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
+```
+
+### Explicit HardwareSerial
+```
+SdsDustSensor sds(Serial1); // passing HardwareSerial as parameter
+sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
+```
+
 ## Supported operations
-Each response coming from sensor is validated whether it has correct head, command id, checksum and tail. Communication with sensor is handled via SoftwareSerial.
 All operations listed in [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf) are fully supported. They are listed below:
 * read PM2.5, PM10 values (reads data from software serial, does not write anything to the serial, all other operations write date to the sensor and expect response - sensor should be set to "active" reporting mode),
 * query PM2.5, PM10 values (in opposite to above, this one sends command to sensor and it responds with PM2.5 and PM10 values - sensor should be set to "query" reporting mode),
@@ -58,12 +83,6 @@ All operations listed in [Laser Dust Sensor Control Protocol V1.3](https://cdn.s
 * check firmware version (year, month, day).
 
 Additionally you can read device id from every sensor response.
-
-### Setting up the sensor
-```
-SdsDustSensor sds(rxPin, txPin);
-sds.begin();
-```
 
 ### Reading PM2.5 and PM10 values
 The following function (readPm()) checks whether there is available data sent from sensor, it does not send any request to sensor so it has to be in 'active' reporting mode.
