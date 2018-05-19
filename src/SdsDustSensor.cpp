@@ -1,9 +1,9 @@
 #include "SdsDustSensor.h"
 
 void SdsDustSensor::write(const Command &command) {
-  sdsSerial->flush();
+  sdsStream->flush();
   for (int i = 0; i < Command::length; ++i) {
-    sdsSerial->write(command.bytes[i]);
+    sdsStream->write(command.bytes[i]);
     #ifdef __DEBUG_SDS_DUST_SENSOR__
     Serial.print("|");
     Serial.print(command.bytes[i], HEX);
@@ -19,9 +19,9 @@ Status SdsDustSensor::readIntoBytes(byte responseId) {
   int checksum = 0;
   int readBytesQuantity = 0;
 
-  while ((sdsSerial->available() > 0) &&
-        (sdsSerial->available() >= Result::lenght - readBytesQuantity)) {
-    byte readByte = sdsSerial->read();
+  while ((sdsStream->available() > 0) &&
+        (sdsStream->available() >= Result::lenght - readBytesQuantity)) {
+    byte readByte = sdsStream->read();
     response[readBytesQuantity] = readByte;
 
     #ifdef __DEBUG_SDS_DUST_SENSOR__

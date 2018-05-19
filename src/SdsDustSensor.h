@@ -28,24 +28,36 @@
 
 #include "SdsDustSensorCommands.h"
 #include "SdsDustSensorResults.h"
-#include <SoftwareSerial.h>
+#include "Serials.h"
 
 // #define __DEBUG_SDS_DUST_SENSOR__
 
 class SdsDustSensor {
 public:
-  SdsDustSensor(int pinRx, int pinTx, int baudRate = 9600):
-    sdsSerial(new SoftwareSerial(pinRx, pinTx)),
-    baudRate(baudRate) {}
+  SdsDustSensor(int pinRx, int pinTx):
+    abstractSerial(new Serials::InternalSoftware(pinRx, pinTx)) {
+      sdsStream = abstractSerial->getStream();
+    }
+
+  SdsDustSensor(SoftwareSerial &softwareSerial):
+    abstractSerial(new Serials::Software(softwareSerial)) {
+      sdsStream = abstractSerial->getStream();
+    }
+
+  SdsDustSensor(HardwareSerial &hardwareSerial):
+    abstractSerial(new Serials::Hardware(hardwareSerial)) {
+      sdsStream = abstractSerial->getStream();
+    }
 
   ~SdsDustSensor() {
-    if (sdsSerial != NULL) {
-      delete sdsSerial;
+    if (abstractSerial != NULL) {
+      abstractSerial->release();
+      delete abstractSerial;
     }
   }
 
-  void begin() {
-    sdsSerial->begin(baudRate);
+  void begin(int baudRate = 9600) {
+    abstractSerial->begin(baudRate);
   }
 
   byte *getLastResponse() {
@@ -131,8 +143,8 @@ public:
 
 private:
   byte response[Result::lenght];
-  int baudRate;
-  SoftwareSerial *sdsSerial = NULL;
+  Stream *sdsStream = NULL;
+  Serials::AbstractSerial *abstractSerial;
 };
 
 #endif // __SDS_DUST_SENSOR_H__
