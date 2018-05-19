@@ -144,7 +144,6 @@ public:
 private:
   byte response[Result::lenght];
   Stream *sdsStream = NULL;
-  // SoftwareSerial *softwareSerial = NULL;
   Serials::AbstractSerial *abstractSerial;
 };
 
