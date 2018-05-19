@@ -43,7 +43,8 @@ For more examples see [examples](examples/) folder.
 ## Initilization
 Communication with sensor can be handled by SoftwareSerial or HardwareSerial. You can pass SoftwareSerial or HardwareSerial directly to the constructor or provide rx & tx pins (library will use SoftwareSerial then).
 
-### Internal SoftwareSerial
+### Using tx and rx pins
+Communication will be implicitly handled by SoftwareSerial.
 ```
 int rxPin = D1;
 int txPin = D2;
