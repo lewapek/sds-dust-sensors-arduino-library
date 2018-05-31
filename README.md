@@ -1,5 +1,5 @@
 # Nova Fitness SDS dust sensors arduino library
-Supports Nova Fitness SDS011 however should also work for other Nova Fitness SDS sensors as well.
+Supports Nova Fitness SDS011, SDS021 however should work for other Nova Fitness SDS sensors as well.
 This library attempts to provide easy-to-use abstraction over [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).
 Each response coming from sensor is validated whether it has correct head, command id, checksum and tail.
 
@@ -133,7 +133,7 @@ result.isWorking(); // true
 ### Other functions
 Responses format of other functions can be found in [src](src/) folder.
 
-### Helpful methods
+## Helpful methods
 Additionally with every sensor result you can:
 * access result status ```result.status```, which can be one of {Ok, NotAvailable, InvalidChecksum, InvalidResponseId, InvalidHead, InvalidTail},
 * easily check whether response is correct with ```result.isOk()``` method,
@@ -141,6 +141,10 @@ Additionally with every sensor result you can:
 
 You can also access ```result.deviceId()``` (pointer to the 1st (of 2) device id byte) and ```result.rawBytes``` (pointer to raw sensor response - byte array).
 
-### References
+## Additional notes and observations
+### Power consumption and modes
+"Query" reporting mode is probably less power when sleeping consuming than "Active" because the sensor doesn't have to know when it should wake up (doesn't have schedule any internal tasks).
+
+## References
 * [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf)
 * http://www.inovafitness.com/en/a/chanpinzhongxin/95.html
