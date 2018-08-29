@@ -133,9 +133,16 @@ public:
     return FirmwareVersionResult(status, response);
   }
 
-  Status execute(const Command &command) {
+  Status execute(const Command &command, int retryDelayMs = 10, int maxRetriesNotAvailable = 50) {
     write(command);
-    return readIntoBytes(command.responseId);
+
+    Status status = readIntoBytes(command.responseId);
+    for (int i = 0; status == Status::NotAvailable && i < maxRetriesNotAvailable; ++i) {
+      delay(retryDelayMs);
+      status = readIntoBytes(command.responseId);
+    }
+
+    return status;
   }
 
   void write(const Command &command);
