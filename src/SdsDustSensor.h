@@ -123,13 +123,13 @@ public:
   // warning: according to 'Laser Dust Sensor Control Protocol V1.3' this method should work
   //          however sensor responds with random bytes or doesn't response at all
   //          despite the above issue it seems that sensor wakes up properly (fan starts working)
-  WorkingStateResult wakeupSingle() {
+  WorkingStateResult wakeupUnsafe() {
     Status status = execute(Commands::wakeup);
     return WorkingStateResult(status, response);
   }
 
   // warning: double wakeup in order to assure proper sensor response
-  //          if you don't care about sensor response you can use 'wakeupSingle'
+  //          if you don't care about sensor response you can use 'wakeupUnsafe'
   WorkingStateResult wakeup() {
     Status status = execute(Commands::wakeup);
     if (status != Status::Ok) {
