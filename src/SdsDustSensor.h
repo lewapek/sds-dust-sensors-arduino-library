@@ -100,7 +100,7 @@ public:
 
   // warning: this method doesn't write anything to the sensor, it just reads incoming bytes
   PmResult readPm() {
-    Status status = readIntoBytes(Commands::queryPm.responseId);
+    Status status = retryRead(Commands::queryPm.responseId);
     return PmResult(status, response);
   }
 
