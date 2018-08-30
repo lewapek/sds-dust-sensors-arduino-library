@@ -30,22 +30,36 @@
 #include "SdsDustSensorResults.h"
 #include "Serials.h"
 
-// #define __DEBUG_SDS_DUST_SENSOR__
+#define RETRY_DELAY_MS_DEFAULT 5
+#define MAX_RETRIES_NOT_AVAILABLE_DEFAULT 100
 
 class SdsDustSensor {
 public:
-  SdsDustSensor(int pinRx, int pinTx):
-    abstractSerial(new Serials::InternalSoftware(pinRx, pinTx)) {
+  SdsDustSensor(int pinRx,
+                int pinTx,
+                int retryDelayMs = RETRY_DELAY_MS_DEFAULT,
+                int maxRetriesNotAvailable = MAX_RETRIES_NOT_AVAILABLE_DEFAULT):
+    abstractSerial(new Serials::InternalSoftware(pinRx, pinTx)),
+    retryDelayMs(retryDelayMs),
+    maxRetriesNotAvailable(maxRetriesNotAvailable) {
       sdsStream = abstractSerial->getStream();
     }
 
-  SdsDustSensor(SoftwareSerial &softwareSerial):
-    abstractSerial(new Serials::Software(softwareSerial)) {
+  SdsDustSensor(SoftwareSerial &softwareSerial,
+                int retryDelayMs = RETRY_DELAY_MS_DEFAULT,
+                int maxRetriesNotAvailable = MAX_RETRIES_NOT_AVAILABLE_DEFAULT):
+    abstractSerial(new Serials::Software(softwareSerial)),
+    retryDelayMs(retryDelayMs),
+    maxRetriesNotAvailable(maxRetriesNotAvailable) {
       sdsStream = abstractSerial->getStream();
     }
 
-  SdsDustSensor(HardwareSerial &hardwareSerial):
-    abstractSerial(new Serials::Hardware(hardwareSerial)) {
+  SdsDustSensor(HardwareSerial &hardwareSerial,
+                int retryDelayMs = RETRY_DELAY_MS_DEFAULT,
+                int maxRetriesNotAvailable = MAX_RETRIES_NOT_AVAILABLE_DEFAULT):
+    abstractSerial(new Serials::Hardware(hardwareSerial)),
+    retryDelayMs(retryDelayMs),
+    maxRetriesNotAvailable(maxRetriesNotAvailable) {
       sdsStream = abstractSerial->getStream();
     }
 
@@ -86,7 +100,7 @@ public:
 
   // warning: this method doesn't write anything to the sensor, it just reads incoming bytes
   PmResult readPm() {
-    Status status = readIntoBytes(Commands::queryPm.responseId);
+    Status status = retryRead(Commands::queryPm.responseId);
     return PmResult(status, response);
   }
 
@@ -106,8 +120,21 @@ public:
     return WorkingStateResult(status, response);
   }
 
+  // warning: according to 'Laser Dust Sensor Control Protocol V1.3' this method should work
+  //          however sensor responds with random bytes or doesn't response at all
+  //          despite the above issue it seems that sensor wakes up properly (fan starts working)
+  WorkingStateResult wakeupSingle() {
+    Status status = execute(Commands::wakeup);
+    return WorkingStateResult(status, response);
+  }
+
+  // warning: double wakeup in order to assure proper sensor response
+  //          if you don't care about sensor response you can use 'wakeupSingle'
   WorkingStateResult wakeup() {
     Status status = execute(Commands::wakeup);
+    if (status != Status::Ok) {
+      status = execute(Commands::wakeup);
+    }
     return WorkingStateResult(status, response);
   }
 
@@ -134,17 +161,23 @@ public:
   }
 
   Status execute(const Command &command) {
+    flushStream();
     write(command);
-    return readIntoBytes(command.responseId);
+    return retryRead(command.responseId);
   }
 
   void write(const Command &command);
   Status readIntoBytes(byte responseId);
 
 private:
-  byte response[Result::lenght];
-  Stream *sdsStream = NULL;
   Serials::AbstractSerial *abstractSerial;
+  Stream *sdsStream = NULL;
+  byte response[Result::lenght];
+  int retryDelayMs;
+  int maxRetriesNotAvailable;
+
+  void flushStream();
+  Status retryRead(byte responseId);
 };
 
 #endif // __SDS_DUST_SENSOR_H__
