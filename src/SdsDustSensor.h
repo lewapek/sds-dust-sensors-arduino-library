@@ -170,11 +170,11 @@ public:
   Status readIntoBytes(byte responseId);
 
 private:
+  Serials::AbstractSerial *abstractSerial;
+  Stream *sdsStream = NULL;
+  byte response[Result::lenght];
   int retryDelayMs;
   int maxRetriesNotAvailable;
-  byte response[Result::lenght];
-  Stream *sdsStream = NULL;
-  Serials::AbstractSerial *abstractSerial;
 
   void flushStream();
   Status retryRead(byte responseId);

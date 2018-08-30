@@ -1,5 +1,4 @@
 #include "SdsDustSensor.h"
-// #define __DEBUG_SDS_DUST_SENSOR__
 
 void SdsDustSensor::write(const Command &command) {
   for (int i = 0; i < Command::length; ++i) {
