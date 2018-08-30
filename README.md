@@ -2,6 +2,7 @@
 Supports Nova Fitness SDS011, SDS021 however should work for other Nova Fitness SDS sensors as well.
 This library attempts to provide easy-to-use abstraction over [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).
 Each response coming from sensor is validated whether it has correct head, command id, checksum and tail.
+Library handles automatic retries in case of not available response or invalid head.
 
 ## Quickstart
 ```
@@ -48,7 +49,7 @@ Communication will be implicitly handled by SoftwareSerial.
 ```
 int rxPin = D1;
 int txPin = D2;
-SdsDustSensor sds(rxPin, txPin);
+SdsDustSensor sds(rxPin, txPin); // you can tune retry mechanism with additional parameters: retryDelayMs and maxRetriesNotAvailable
 sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
 ```
 
@@ -57,13 +58,13 @@ sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
 int rxPin = D1;
 int txPin = D2;
 SoftwareSerial softwareSerial(rxPin, txPin);
-SdsDustSensor sds(softwareSerial);
+SdsDustSensor sds(softwareSerial); // you can tune retry mechanism with additional parameters: retryDelayMs and maxRetriesNotAvailable
 sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
 ```
 
 ### Explicit HardwareSerial
 ```
-SdsDustSensor sds(Serial1); // passing HardwareSerial as parameter
+SdsDustSensor sds(Serial1); // passing HardwareSerial as parameter, you can tune retry mechanism with additional parameters: retryDelayMs and maxRetriesNotAvailable
 sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
 ```
 
@@ -125,8 +126,17 @@ result.isWorking(); // false
 ```
 
 ### Waking up
+Safe wakeup tries to perform wakeup twice to assure proper response from sensor. When waking up after sleep sensor seems to respond with random bytes or not to respond at all. Despite incorrect response it seems to wake up correctly (fan starts working). Second wakeup forces sensor to send proper response.
+Because of the fact that sensor seems to work correctly (despite invalid response), you can use unsafe method if you don't care about the response.
+
+### Safe
 ```
 WorkingStateResult result = sds.wakeup();
+result.isWorking(); // true
+```
+### Unsafe
+```
+WorkingStateResult result = sds.wakeupUnsafe();
 result.isWorking(); // true
 ```
 
