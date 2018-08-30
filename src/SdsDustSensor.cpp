@@ -1,7 +1,7 @@
 #include "SdsDustSensor.h"
+// #define __DEBUG_SDS_DUST_SENSOR__
 
 void SdsDustSensor::write(const Command &command) {
-  sdsStream->flush();
   for (int i = 0; i < Command::length; ++i) {
     sdsStream->write(command.bytes[i]);
     #ifdef __DEBUG_SDS_DUST_SENSOR__
@@ -19,8 +19,7 @@ Status SdsDustSensor::readIntoBytes(byte responseId) {
   int checksum = 0;
   int readBytesQuantity = 0;
 
-  while ((sdsStream->available() > 0) &&
-        (sdsStream->available() >= Result::lenght - readBytesQuantity)) {
+  while (sdsStream->available() >= Result::lenght - readBytesQuantity) {
     byte readByte = sdsStream->read();
     response[readBytesQuantity] = readByte;
 
@@ -81,4 +80,40 @@ Status SdsDustSensor::readIntoBytes(byte responseId) {
   #endif
 
   return Status::NotAvailable;
+}
+
+void SdsDustSensor::flushStream() {
+  while (sdsStream->available() > 0) {
+    #ifdef __DEBUG_SDS_DUST_SENSOR__
+    Serial.print("|");
+    Serial.print(sdsStream->read(), HEX);
+    Serial.println("| <- omitted byte");
+    #else
+    sdsStream->read();
+    #endif
+  }
+}
+
+Status SdsDustSensor::retryRead(byte responseId) {
+  Status status = readIntoBytes(responseId);
+  for (int i = 0; status == Status::NotAvailable && i < maxRetriesNotAvailable; ++i) {
+    #ifdef __DEBUG_SDS_DUST_SENSOR__
+    Serial.print("Retry #");
+    Serial.print(i);
+    Serial.println(" due to not available response");
+    #endif
+    delay(retryDelayMs);
+    status = readIntoBytes(responseId);
+  }
+
+  for (int i = 2; status == Status::InvalidHead && i < Result::lenght; ++i) {
+    #ifdef __DEBUG_SDS_DUST_SENSOR__
+    Serial.print("Retry #");
+    Serial.print(i - 2);
+    Serial.println(" due to invalid response head");
+    #endif
+    status = readIntoBytes(responseId);
+  }
+
+  return status;
 }
