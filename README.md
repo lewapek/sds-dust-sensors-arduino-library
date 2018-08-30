@@ -1,8 +1,8 @@
 # Nova Fitness SDS dust sensors arduino library
 Supports Nova Fitness SDS011, SDS021 however should work for other Nova Fitness SDS sensors as well.
-This library attempts to provide easy-to-use abstraction over [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).
-Each response coming from sensor is validated whether it has correct head, command id, checksum and tail.
-Library handles automatic retries in case of not available response or invalid head.
+This library attempts to provide easy-to-use abstraction over [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).  
+Each response coming from sensor is validated whether it has correct head, command id, checksum and tail. 
+Library also handles automatic retries in case of not available response or failed response from sensor.
 
 ## Quickstart
 ```
@@ -129,12 +129,12 @@ result.isWorking(); // false
 Safe wakeup tries to perform wakeup twice to assure proper response from sensor. When waking up after sleep sensor seems to respond with random bytes or not to respond at all. Despite incorrect response it seems to wake up correctly (fan starts working). Second wakeup forces sensor to send proper response.
 Because of the fact that sensor seems to work correctly (despite invalid response), you can use unsafe method if you don't care about the response.
 
-### Safe
+#### Safe wakeup
 ```
 WorkingStateResult result = sds.wakeup();
 result.isWorking(); // true
 ```
-### Unsafe
+#### Unsafe wakeup
 ```
 WorkingStateResult result = sds.wakeupUnsafe();
 result.isWorking(); // true
