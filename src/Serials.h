@@ -12,6 +12,7 @@ namespace Serials {
     virtual void release() {
       // do nothing by default
     }
+    virtual ~AbstractSerial() {}
   };
 
   struct Hardware: public AbstractSerial {
