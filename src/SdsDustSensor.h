@@ -65,7 +65,6 @@ public:
 
   ~SdsDustSensor() {
     if (abstractSerial != NULL) {
-      abstractSerial->release();
       delete abstractSerial;
     }
   }

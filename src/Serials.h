@@ -9,9 +9,6 @@ namespace Serials {
   struct AbstractSerial {
     virtual void begin(int baudRate) ;
     virtual Stream *getStream();
-    virtual void release() {
-      // do nothing by default
-    }
     virtual ~AbstractSerial() {}
   };
 
@@ -43,12 +40,19 @@ namespace Serials {
     SoftwareSerial &serial;
   };
 
-  struct InternalSoftware: public Software {
-    InternalSoftware(const int &pinRx, const int &pinTx): Software(*(new SoftwareSerial(pinRx, pinTx))) {}
+  struct InternalSoftware: public AbstractSerial {
+    InternalSoftware(const int &pinRx, const int &pinTx):
+      serial(SoftwareSerial(pinRx, pinTx)) {}
 
-    void release() {
-      delete &serial;
+    void begin(int baudRate) {
+      serial.begin(baudRate);
     }
+
+    Stream *getStream() {
+      return &serial;
+    }
+
+    SoftwareSerial serial;
   };
 
 }
