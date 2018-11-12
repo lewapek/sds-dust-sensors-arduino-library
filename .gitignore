@@ -1,4 +1,5 @@
 src/main.cpp
+src/src.ino
 platformio.ini
 .pioenvs
 .piolibdeps

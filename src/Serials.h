@@ -6,10 +6,18 @@
 
 namespace Serials {
 
-  struct AbstractSerial {
-    virtual void begin(int baudRate) ;
-    virtual Stream *getStream();
-    virtual ~AbstractSerial() {}
+  // cpp is really weird...
+  // there was compilation warning about missing virtual destructor for class AbstractSerial
+  // I added virtual destructor with empty body
+  // remaining virtual methods didn't have body (they were 'pure virtual')
+  // after that the following error appeared: undefined reference to `vtable for Serials::AbstractSerial'
+  // what a nonsense ...
+  // just to satisfy linker in gcc I needed to add empty parentheses to other virtual methods...
+  class AbstractSerial {
+  public:
+    virtual void begin(int baudRate) {};
+    virtual Stream *getStream() {};
+    virtual ~AbstractSerial() {};
   };
 
   struct Hardware: public AbstractSerial {
@@ -42,17 +50,23 @@ namespace Serials {
 
   struct InternalSoftware: public AbstractSerial {
     InternalSoftware(const int &pinRx, const int &pinTx):
-      serial(SoftwareSerial(pinRx, pinTx)) {}
+      serial(new SoftwareSerial(pinRx, pinTx)) {}
+
+    ~InternalSoftware() {
+      if (serial != NULL) {
+        delete serial;
+      }
+    }
 
     void begin(int baudRate) {
-      serial.begin(baudRate);
+      serial->begin(baudRate);
     }
 
     Stream *getStream() {
-      return &serial;
+      return serial;
     }
 
-    SoftwareSerial serial;
+    SoftwareSerial *serial;
   };
 
 }
