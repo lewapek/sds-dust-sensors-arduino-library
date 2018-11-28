@@ -41,7 +41,7 @@ void loop() {
 ```
 For more examples see [examples](examples/) folder.
 
-## Initilization
+## Initialization
 Communication with sensor can be handled by SoftwareSerial or HardwareSerial. You can pass SoftwareSerial or HardwareSerial directly to the constructor or provide rx & tx pins (library will use SoftwareSerial then).
 
 ### Using tx and rx pins
@@ -153,7 +153,7 @@ You can also access ```result.deviceId()``` (pointer to the 1st (of 2) device id
 
 ## Additional notes and observations
 ### Power consumption and modes
-"Query" reporting mode is probably less power when sleeping consuming than "Active" because the sensor doesn't have to know when it should wake up (doesn't have schedule any internal tasks).
+"Query" reporting mode probably consumes less power when sleeping than "Active" because the sensor doesn't have to know when it should wake up (doesn't have schedule any internal tasks).
 
 ## References
 * [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf)
