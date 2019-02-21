@@ -15,8 +15,8 @@ namespace Serials {
   // just to satisfy linker in gcc I needed to add empty parentheses to other virtual methods...
   class AbstractSerial {
   public:
-    virtual void begin(int baudRate) {};
-    virtual Stream *getStream() {};
+    virtual void begin(int baudRate) = 0;
+    virtual Stream *getStream() = 0;
     virtual ~AbstractSerial() {};
   };
 
