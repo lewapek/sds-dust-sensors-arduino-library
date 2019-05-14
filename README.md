@@ -1,16 +1,17 @@
 # Nova Fitness SDS dust sensors arduino library
 Supports Nova Fitness SDS011, SDS021 however should work for other Nova Fitness SDS sensors as well.
-This library attempts to provide easy-to-use abstraction over [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).  
-Each response coming from sensor is validated whether it has correct head, command id, checksum and tail. 
+This library attempts to provide easy-to-use abstraction over [Laser Dust Sensor Control Protocol V1.3](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).
+Each response coming from sensor is validated whether it has correct head, command id, checksum and tail.
 Library also handles automatic retries in case of not available / failed response from sensor.
 
 ## Quickstart
-```
+```arduino
 #include "SdsDustSensor.h"
 
 int rxPin = D1;
 int txPin = D2;
 SdsDustSensor sds(rxPin, txPin);
+// SdsDustSensor sds(Serial1); // if you are on a SAMD based board
 
 void setup() {
   Serial.begin(9600);
@@ -46,15 +47,18 @@ Communication with sensor can be handled by SoftwareSerial or HardwareSerial. Yo
 
 ### Using tx and rx pins
 Communication will be implicitly handled by SoftwareSerial.
-```
+```arduino
 int rxPin = D1;
 int txPin = D2;
 SdsDustSensor sds(rxPin, txPin); // you can tune retry mechanism with additional parameters: retryDelayMs and maxRetriesNotAvailable
 sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
 ```
 
+> This constructor is not available on SAMD based boards.
+> SAMD boards should provide more than enough HardwareSerial ports / SERCOM ports.
+
 ### Explicit SoftwareSerial
-```
+```arduino
 int rxPin = D1;
 int txPin = D2;
 SoftwareSerial softwareSerial(rxPin, txPin);
@@ -62,8 +66,11 @@ SdsDustSensor sds(softwareSerial); // you can tune retry mechanism with addition
 sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
 ```
 
+> This constructor is not available on SAMD based boards.
+> SAMD boards should provide more than enough HardwareSerial ports / SERCOM ports.
+
 ### Explicit HardwareSerial
-```
+```arduino
 SdsDustSensor sds(Serial1); // passing HardwareSerial as parameter, you can tune retry mechanism with additional parameters: retryDelayMs and maxRetriesNotAvailable
 sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
 ```
@@ -88,7 +95,7 @@ Additionally you can read device id from every sensor response.
 
 ### Reading PM2.5 and PM10 values
 The following function (readPm()) checks whether there is available data sent from sensor, it does not send any request to sensor so it has to be in 'active' reporting mode.
-```
+```arduino
 PmResult result = sds.readPm();
 result.pm25; // float
 result.pm10; // float
@@ -96,7 +103,7 @@ result.pm10; // float
 
 ### Querying PM2.5 and PM10 values
 In opposite to above function, this one sends request to sensor and expects the response. Sensor should be in 'query' reporting mode.
-```
+```arduino
 PmResult result = sds.queryPm();
 result.pm25; // float
 result.pm10; // float
@@ -104,7 +111,7 @@ result.pm10; // float
 
 ### Setting custom working period - recommended over continuous
 In order to set custom working period you need to specify single argument - duration (minutes) of the cycle. One cycle means working 30 sec, doing measurement and sleeping for ```duration-30 [sec]```. This setting is recommended when using 'active' reporting mode.
-```
+```arduino
 int cycleMinutes = 4;
 WorkingPeriodResult result = sds.setCustomWorkingPeriod(cycleMinutes);
 result.period; // 4
@@ -114,13 +121,13 @@ result.toString();
 
 ### Setting reporting mode to 'query'
 When 'query' mode is active the sensor will not send data automatically, you need to send `sds.queryPm()` command on order to measure PM values.
-```
+```arduino
 ReportingModeResult result = sds.setQueryReportingMode();
 result.mode; // MODE::QUERY
 ```
 
 ### Setting sensor state to 'sleeping'
-```
+```arduino
 WorkingStateResult result = sds.sleep();
 result.isWorking(); // false
 ```
@@ -130,12 +137,12 @@ Safe wakeup tries to perform wakeup twice to assure proper response from sensor.
 Because of the fact that sensor seems to work correctly (despite invalid response), you can use unsafe method if you don't care about the response.
 
 #### Safe wakeup
-```
+```arduino
 WorkingStateResult result = sds.wakeup();
 result.isWorking(); // true
 ```
 #### Unsafe wakeup
-```
+```arduino
 WorkingStateResult result = sds.wakeupUnsafe();
 result.isWorking(); // true
 ```

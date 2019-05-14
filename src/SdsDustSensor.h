@@ -35,6 +35,8 @@
 
 class SdsDustSensor {
 public:
+
+#ifndef ARDUINO_SAMD_VARIANT_COMPLIANCE // there is no SoftwareSerial available (needed) on SAMD boards.
   SdsDustSensor(int pinRx,
                 int pinTx,
                 int retryDelayMs = RETRY_DELAY_MS_DEFAULT,
@@ -53,6 +55,7 @@ public:
     maxRetriesNotAvailable(maxRetriesNotAvailable) {
       sdsStream = abstractSerial->getStream();
     }
+#endif
 
   SdsDustSensor(HardwareSerial &hardwareSerial,
                 int retryDelayMs = RETRY_DELAY_MS_DEFAULT,

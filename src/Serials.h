@@ -1,7 +1,9 @@
 #ifndef __SDS_ABSTRACT_SERIAL_H__
 #define __SDS_ABSTRACT_SERIAL_H__
 
+#ifndef ARDUINO_SAMD_VARIANT_COMPLIANCE // there is no SoftwareSerial available (needed) on SAMD boards.
 #include <SoftwareSerial.h>
+#endif
 #include <HardwareSerial.h>
 
 namespace Serials {
@@ -34,6 +36,7 @@ namespace Serials {
     HardwareSerial &serial;
   };
 
+#ifndef ARDUINO_SAMD_VARIANT_COMPLIANCE // there is no SoftwareSerial available (needed) on SAMD boards.
   struct Software: public AbstractSerial {
     Software(SoftwareSerial &serial): serial(serial) {}
 
@@ -68,6 +71,7 @@ namespace Serials {
 
     SoftwareSerial *serial;
   };
+#endif // ARDUINO_SAMD_VARIANT_COMPLIANCE
 
 }
 
