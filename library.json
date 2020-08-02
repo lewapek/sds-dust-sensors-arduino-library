@@ -1,6 +1,6 @@
 {
   "name": "Nova Fitness Sds dust sensors library",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "keywords": "sds011, sds, sds021, dust, sensor, pm10, pm25, arduino, esp8266",
   "description": "A high-level abstaction over Sds sensors family",
   "homepage": "https://github.com/lewapek/sds-dust-sensors-arduino-library",
