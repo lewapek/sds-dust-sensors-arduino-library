@@ -36,7 +36,7 @@
 class SdsDustSensor {
 public:
 
-#ifndef ARDUINO_SAMD_VARIANT_COMPLIANCE // there is no SoftwareSerial available (needed) on SAMD boards.
+#if !defined(ARDUINO_SAMD_VARIANT_COMPLIANCE) && !defined(ESP32)
   SdsDustSensor(int pinRx,
                 int pinTx,
                 int retryDelayMs = RETRY_DELAY_MS_DEFAULT,
