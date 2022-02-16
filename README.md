@@ -74,7 +74,7 @@ sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
 SdsDustSensor sds(Serial1); // passing HardwareSerial as parameter, you can tune retry mechanism with additional parameters: retryDelayMs and maxRetriesNotAvailable
 sds.begin(); // you can pass custom baud rate as parameter (9600 by default)
 // or you can pass custom rxPin and txPin to HardwareSerial, if your board (e.g. ESP32) supports remapping of GPIOs to Serial
-// sds.begin(9600, SERIAL_8N1, SDS_RX, SDS_TX);
+// sds.begin(9600, SERIAL_8N1, rxPin, txPin);
 ```
 
 ## Supported operations
