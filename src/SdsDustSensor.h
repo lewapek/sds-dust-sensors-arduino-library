@@ -72,9 +72,9 @@ public:
     }
   }
 
-  void begin(int baudRate = 9600) {
-    abstractSerial->begin(baudRate);
-  }
+  void begin(int baudRate = 9600, uint32_t config = SERIAL_8N1, int pinRx = -1, int pinTx = -1) {
+      abstractSerial->begin(baudRate, config, pinRx, pinTx);
+    }
 
   byte *getLastResponse() {
     return response;

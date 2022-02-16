@@ -17,7 +17,7 @@ namespace Serials {
   // just to satisfy linker in gcc I needed to add empty parentheses to other virtual methods...
   class AbstractSerial {
   public:
-    virtual void begin(int baudRate) = 0;
+    virtual void begin(int baudRate, uint32_t config, int pinRx, int pinTx) = 0;
     virtual Stream *getStream() = 0;
     virtual ~AbstractSerial() {};
   };
@@ -25,8 +25,8 @@ namespace Serials {
   struct Hardware: public AbstractSerial {
     Hardware(HardwareSerial &serial): serial(serial) {}
 
-    void begin(int baudRate) {
-      serial.begin(baudRate);
+    void begin(int baudRate = 9600, uint32_t config = SERIAL_8N1, int pinRx = -1, int pinTx = -1) {
+      serial.begin(baudRate, config, pinRx, pinTx);
     }
 
     Stream *getStream() {
@@ -40,7 +40,7 @@ namespace Serials {
   struct Software: public AbstractSerial {
     Software(SoftwareSerial &serial): serial(serial) {}
 
-    void begin(int baudRate) {
+    void begin(int baudRate = 9600, uint32_t config = SERIAL_8N1, int pinRx = -1, int pinTx = -1) {
       serial.begin(baudRate);
     }
 
@@ -61,8 +61,8 @@ namespace Serials {
       }
     }
 
-    void begin(int baudRate) {
-      serial->begin(baudRate);
+    void begin(int baudRate = 9600, uint32_t config = SERIAL_8N1, int pinRx = -1, int pinTx = -1) {
+      serial.begin(baudRate);
     }
 
     Stream *getStream() {
