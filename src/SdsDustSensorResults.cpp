@@ -8,6 +8,7 @@ String Result::statusToString() {
     case Status::InvalidResponseId: return "Invalid response id";
     case Status::InvalidHead: return "Invalid head";
     case Status::InvalidTail: return "Invalid tail";
+    case Status::InvalidFirmwareVersion: return "Invalid firmware version";
     default: return "undefined status";
   }
 }

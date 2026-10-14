@@ -152,7 +152,7 @@ Responses format of other functions can be found in [src](src/) folder.
 
 ## Helpful methods
 Additionally with every sensor result you can:
-* access result status ```result.status```, which can be one of {Ok, NotAvailable, InvalidChecksum, InvalidResponseId, InvalidHead, InvalidTail},
+* access result status ```result.status```, which can be one of {Ok, NotAvailable, InvalidChecksum, InvalidResponseId, InvalidHead, InvalidTail, InvalidFirmwareVersion},
 * easily check whether response is correct with ```result.isOk()``` method,
 * convert status to string with ```result.statusToString()``` method.
 
