@@ -7,7 +7,8 @@
 #endif
 
 enum class Status {
-  Ok, NotAvailable, InvalidChecksum, InvalidResponseId, InvalidHead, InvalidTail
+  Ok, NotAvailable, InvalidChecksum, InvalidResponseId, InvalidHead, InvalidTail,
+  InvalidFirmwareVersion
 };
 
 struct Result {
@@ -140,6 +141,9 @@ struct FirmwareVersionResult: public Result {
       year = rawBytes[3];
       month = rawBytes[4];
       day = rawBytes[5];
+      if (month < 1 || month > 12 || day < 1 || day > 31) {
+        this->status = Status::InvalidFirmwareVersion;
+      }
     }
   }
 
