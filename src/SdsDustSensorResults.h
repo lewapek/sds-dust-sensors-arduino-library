@@ -24,7 +24,7 @@ struct Result {
       }
     } else {
       for (int i = 0; i < lenght; ++i) {
-        rawBytes[i] |= 0xFF;
+        rawBytes[i] = 0xFF;
       }
     }
   };
